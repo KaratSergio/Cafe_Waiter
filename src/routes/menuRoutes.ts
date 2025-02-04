@@ -1,5 +1,6 @@
 import { Router } from "express";
+import { MenuController } from "../controllers/MenuController";
 
 export const menuRoutes = Router();
-menuRoutes.post('/')
-menuRoutes.get('/')
+menuRoutes.get('/', MenuController.getAll)
+menuRoutes.post('/', MenuController.addItem)
