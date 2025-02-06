@@ -9,12 +9,12 @@ describe("InMemoryOrderRepository", () => {
         repository = new InMemoryOrderRepository();
     })
 
-    test("should return an empty list of orders initially", async () => { 
+    it("should return an empty list of orders initially", async () => { 
         const orders = await repository.getAll();
         expect(orders).toEqual([]);
      })
     
-    test("must add a new order", async () => {
+    it("must add a new order", async () => {
         const items: MenuItem[] = [
             { id: "1", name: "Pizza", price: 10 },
             { id: "2", name: "Cola", price: 2 }
@@ -28,7 +28,7 @@ describe("InMemoryOrderRepository", () => {
         expect(orders[0]).toEqual(order);
     });
     
-    test("should find the order by id", async () => { 
+    it("should find the order by id", async () => { 
         const order: Order = { id: "1", items: [], totalPrice: 0, status: "pending" }
         await repository.create(order);
         
@@ -36,7 +36,7 @@ describe("InMemoryOrderRepository", () => {
         expect(foundOrder).toEqual(order);
      })
     
-    test("should return null if the order is not found", async () => {
+    it("should return null if the order is not found", async () => {
         const foundOrder = await repository.getById("984");
         expect(foundOrder).toBeNull();
     })

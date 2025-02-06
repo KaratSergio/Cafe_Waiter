@@ -6,8 +6,16 @@ const orderService = new OrderService(new InMemoryOrderRepository())
 
 export class OrderController {
     static async create(req: Request, res: Response) {
-        const order =  await orderService.createOrder(req.body.items);
-        res.status(201).json(order);
+        try {
+            const order =  await orderService.createOrder(req.body.items);
+            res.status(201).json(order);
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(400).json({error: error.message})
+            } else {
+                res.status(500).json({error: "Internal Server Error"})
+            }
+        }
     } 
 
     static async getAll(req: Request, res: Response) {

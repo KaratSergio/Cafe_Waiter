@@ -13,6 +13,10 @@ export class MenuService {
     }
 
     async addMenuItem(item: MenuItem): Promise<MenuItem> {
+        if (item.price < 0) {
+            throw new Error('Price cannot be negative');
+        }
+        
         return this.#menuRepo.create(item);
     }
 }

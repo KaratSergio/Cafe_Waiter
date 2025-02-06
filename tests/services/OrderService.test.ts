@@ -2,6 +2,7 @@ import { MenuItem } from "../../src/models/MenuItem";
 import { Order } from "../../src/models/Orders";
 import { OrderService } from "../../src/services/OrderService";
 import { InMemoryOrderRepository } from "../../src/repositories/inMemory/InMemoryOrderRepository";
+import { request } from "express";
 
 describe('OrderService', () => {
     let service: OrderService;
@@ -12,12 +13,12 @@ describe('OrderService', () => {
     service = new OrderService(repository);
     })
 
-    test("should return an empty orders list initially", async () => { 
+    it("should return an empty orders list initially", async () => { 
         const orders = await service.getOrders();
         expect(orders).toEqual([])
     })
     
-    test("should return order", async () => {
+    it("should return order", async () => {
         const items: MenuItem[] = [
             { id: '1', name: 'Donor kebab', price: 6 },
             { id: '2', name: 'Pepsi', price: 3 }
@@ -32,5 +33,16 @@ describe('OrderService', () => {
         const orders = await service.getOrders()
         expect(orders).toHaveLength(1)
         expect(orders[0]).toEqual(order)
-     })
+    })
+
+    it("should not create an order with an empty items array", async () => {
+        const emptyOrder = { items: [] }
+        
+        try {
+            await service.createOrder(emptyOrder.items)
+        } catch (error: unknown) {
+            const e = error as Error;
+            expect(e.message).toBe('Order must contain at least one item')
+        }
+    })
 })

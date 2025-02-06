@@ -10,7 +10,15 @@ export class MenuController {
     }
 
     static async addItem(req: Request, res: Response) {
-        const item = await menuService.addMenuItem(req.body)
-        res.status(201).json(item)
+        try {      
+            const item = await menuService.addMenuItem(req.body)
+            res.status(201).json(item)
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(400).json({error: error.message})
+            } else {
+                res.status(500).json({error: "Internal Server Error"})
+            }
+        }
     }
 }

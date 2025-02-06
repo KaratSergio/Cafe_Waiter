@@ -29,4 +29,12 @@ describe("OrdersController", () => {
         expect(response.body.items).toEqual(newOrder.items);
         expect(response.body.totalPrice).toBe(11);
     })
+
+    it('should return 400 for empty items array', async () => {
+        const emptyOrder = { items: [] }
+        const response = await request(app).post('/orders').send(emptyOrder)
+
+        expect(response.status).toBe(400)
+        expect(response.body).toHaveProperty('error', 'Order must contain at least one item')
+    })
 })

@@ -8,12 +8,12 @@ describe('InMemoryMenuRepository', () => {
         repository = new InMemoryMenuRepository();
     })
 
-    test("should return an empty list initially", async () => {
+    it("should return an empty list initially", async () => {
         const menu = await repository.getAll();
         expect(menu).toEqual([]);
     })
 
-    test("should add a new item to the menu", async () => {
+    it("should add a new item to the menu", async () => {
         const item: MenuItem = { id: "1", name: "Gazpacho", price: 14 }
         await repository.create(item)
 
@@ -22,7 +22,7 @@ describe('InMemoryMenuRepository', () => {
         expect(menu[0]).toEqual(item);
     })
 
-    test("must find element by id", async () => {
+    it("must find element by id", async () => {
         const item: MenuItem = { id: "1", name: "Burger", price: 9 }
         await repository.create(item)
 
@@ -30,7 +30,7 @@ describe('InMemoryMenuRepository', () => {
         expect(foundItem).toEqual(item);
     })
 
-    test("should return null if the element is not found", async () => {
+    it("should return null if the element is not found", async () => {
         const foundItem = await repository.getById("938");
         expect(foundItem).toBeNull()
     })

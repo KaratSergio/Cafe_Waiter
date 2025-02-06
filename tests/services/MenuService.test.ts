@@ -11,18 +11,29 @@ describe('MenuService', () => {
         service = new MenuService(repository);
     })
 
-    test("should return an empty menu initially", async () => { 
+    it("should return an empty menu initially", async () => { 
         const menu = await service.getMenu();
         expect(menu).toEqual([])
     })
     
-    test("should add an item to the menu", async () => {
-                const item: MenuItem = { id: "1", name: "Pizza", price: 10 }
+    it("should add an item to the menu", async () => {
+        const item: MenuItem = { id: "1", name: "Pizza", price: 10 }
         const addedItem = await service.addMenuItem(item);
 
         expect(addedItem).toEqual(item);
         const menu = await service.getMenu();
         expect(menu).toHaveLength(1);
         expect(menu[0]).toEqual(item);
+    })
+
+    it("should not add menu item with a negative price", async () => {
+        const invalidMenuItem = { id: '1', name: 'Pasta', price: -10 }
+
+        try {
+            await service.addMenuItem(invalidMenuItem)
+        } catch (error) {
+            const e = error as Error;
+            expect(e.message).toBe('Price cannot be negative')
+        }
     })
 })

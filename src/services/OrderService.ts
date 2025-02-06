@@ -15,12 +15,18 @@ export class OrderService {
 
     async createOrder(items: MenuItem[]): Promise<Order> {
         const totalPrice = items.reduce((sum, item) => sum + item.price, 0)
+        
+        if (items.length === 0) {
+            throw new Error('Order must contain at least one item')
+        }
+
         const newOrder: Order = {
             id: Date.now().toString(),
             items,
             totalPrice,
             status: 'pending',
         }
+        
         return this.#orderRepo.create(newOrder);
     }
 }

@@ -21,4 +21,11 @@ describe("MenuController", () => {
         expect(response.status).toBe(201);
         expect(response.body).toEqual(newItem);
     })
+
+    it('should return 400 for negative price', async () => {
+        const invalidMenuItem = { id: '1', name: 'Pasta', price: -10 }
+        const response = await request(app).post("/menu").send(invalidMenuItem)
+        expect(response.status).toBe(400)
+        expect(response.body).toHaveProperty('error', 'Price cannot be negative')
+    })
 })
