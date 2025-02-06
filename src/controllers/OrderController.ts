@@ -5,12 +5,13 @@ import { InMemoryOrderRepository } from "../repositories/inMemory/InMemoryOrderR
 const orderService = new OrderService(new InMemoryOrderRepository())
 
 export class OrderController {
-    static create(req: Request, res: Response) {
-        const order = orderService.createOrder(req.body.items);
+    static async create(req: Request, res: Response) {
+        const order =  await orderService.createOrder(req.body.items);
         res.status(201).json(order);
     } 
 
-    static getAll(req: Request, res: Response) {
-        res.json(orderService.getOrders())
+    static async getAll(req: Request, res: Response) {
+        const orders = await orderService.getOrders()
+        res.json(orders)
     }
 }

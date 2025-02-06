@@ -12,12 +12,12 @@ describe('OrderService', () => {
     service = new OrderService(repository);
     })
 
-    test("", async () => { 
+    test("should return an empty orders list initially", async () => { 
         const orders = await service.getOrders();
         expect(orders).toEqual([])
     })
     
-    test("", async () => {
+    test("should return order", async () => {
         const items: MenuItem[] = [
             { id: '1', name: 'Donor kebab', price: 6 },
             { id: '2', name: 'Pepsi', price: 3 }
