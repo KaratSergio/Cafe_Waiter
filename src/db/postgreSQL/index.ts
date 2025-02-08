@@ -30,6 +30,6 @@ export const initDB = async () => {
         await pool.query(sql);
         console.log("✅ Database initialized");
     } catch (err) {
-        console.error("🔴 Error initializing database:", err);
+        console.error("❌ Error initializing database:", err);
     }
 };
