@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { MenuService } from "../services/MenuService";
-// import { InMemoryMenuRepository } from "../repositories/inMemory/InMemoryMenuRepository";
-import { PostgresMenuRepository } from "../repositories/postgreSQL/PostgresMenuRepository";
+import { InMemoryMenuRepository } from "../repositories/inMemory/InMemoryMenuRepository";
+// import { PostgresMenuRepository } from "../repositories/postgreSQL/PostgresMenuRepository";
 
-// const menuService = new MenuService(new InMemoryMenuRepository())
-const menuService = new MenuService(new PostgresMenuRepository())
+const menuService = new MenuService(new InMemoryMenuRepository())
+// const menuService = new MenuService(new PostgresMenuRepository())
 
 export class MenuController {
     static async getAll(req: Request, res: Response) {

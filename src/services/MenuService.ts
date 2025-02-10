@@ -25,7 +25,7 @@ export class MenuService {
         return this.#menuRepo.create(item);
     }
 
-  async updateMenuItem(id: string, updates: Partial<MenuItem>): Promise<MenuItem> {
+    async updateMenuItem(id: string, updates: Partial<MenuItem>): Promise<MenuItem> {
     const existingItem = await this.#menuRepo.getById(id);
     if (!existingItem) {
         throw new Error('Item not found');

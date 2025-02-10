@@ -1,8 +1,7 @@
 import { MenuItem } from "../../src/models/MenuItem";
 import { Order } from "../../src/models/Orders";
 import { OrderService } from "../../src/services/OrderService";
-import { InMemoryOrderRepository } from "../../src/repositories/inMemory/InMemoryOrderRepository";
-import { request } from "express";
+import { InMemoryOrderRepository } from "../../src/repositories/inMemory/InMemoryOrderRepository"
 
 describe('OrderService', () => {
     let service: OrderService;
@@ -26,7 +25,12 @@ describe('OrderService', () => {
 
         const order: Order = await service.createOrder(items)
 
-        expect(order.items).toEqual(items)
+        const expectedItems = items.map(item => ({
+            menuItem: { ...item },
+            quantity: 1 
+        }));
+
+        expect(order.items).toEqual(expectedItems)
         expect(order.totalPrice).toBe(9)
         expect(order.status).toBe('pending')
 

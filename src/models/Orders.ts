@@ -10,5 +10,10 @@ export interface Order {
     orderNumber: string;
     items: OrderItem[];
     totalPrice: number;
-    status: 'pending' | 'preparing' | 'ready';
+    status: 'pending' | 'preparing' | 'ready' | 'archived';
+}
+
+export interface TestOrder extends Order {
+    isArchived: boolean;
+    createdAt: Date;
 }

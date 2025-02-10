@@ -8,7 +8,11 @@
     "build": "tsc",
     "serve": "node server.js",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "test:repo": "jest --testPathPattern=tests/repositories",
+    "test:routes": "jest --testPathPattern=tests/routes",
+    "test:controllers": "jest --testPathPattern=tests/controllers",
+    "test:services": "jest --testPathPattern=tests/services"
   },
   "keywords": [],
   "author": "",

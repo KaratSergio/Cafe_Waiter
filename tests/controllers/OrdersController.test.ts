@@ -26,8 +26,18 @@ describe("OrdersController", () => {
         const response = await request(app).post('/orders').send(newOrder);
         expect(response.status).toBe(201);
         expect(response.body).toHaveProperty('id');
-        expect(response.body.items).toEqual(newOrder.items);
-        expect(response.body.totalPrice).toBe(11);
+
+        expect(response.body.items).toEqual(newOrder.items.map(item => ({
+        menuItem: {
+            id: item.id,
+            name: item.name,
+            price: item.price
+        },
+        quantity: 1 
+    })));
+
+    const expectedTotalPrice = newOrder.items.reduce((total, item) => total + item.price, 0);
+    expect(response.body.totalPrice).toBe(expectedTotalPrice);
     })
 
     it('should return 400 for empty items array', async () => {

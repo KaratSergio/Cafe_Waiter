@@ -37,6 +37,7 @@ export class OrderService {
     }
 
     async archiveOrders(): Promise<void> {
-        return this.#orderRepo.archiveOrders();
+        const orderCreatedDates: Record<string, Date> = {};
+        return this.#orderRepo.archiveOrders(orderCreatedDates);
     }
 }
