@@ -13,6 +13,11 @@ export class PostgresMenuRepository implements MenuRepository {
         const result = await pool.query('SELECT * FROM menu WHERE id = $1', [id])
         return result.rows[0] || null;
     }
+
+    async getByName(name: string): Promise<MenuItem | null> {
+        const result = await pool.query('SELECT * FROM menu WHERE name = $1', [name]);
+        return result.rows[0] || null;
+    }
     
     async create(item: MenuItem): Promise<MenuItem> { 
         const result = await pool.query(
@@ -21,5 +26,29 @@ export class PostgresMenuRepository implements MenuRepository {
         )
         logger(`Added menu item: ${item.name}`);
         return result.rows[0];
-     }
+    }
+    
+    async update(item: MenuItem): Promise<MenuItem> {
+        const result = await pool.query(
+            'UPDATE menu SET name = $1, price = $2 WHERE id = $3 RETURNING *',
+            [item.name, item.price, item.id]
+        );
+
+        if (result.rowCount === 0) {
+            throw new Error('Update field, item not found')
+        }
+
+        logger(`Updated menu item: ${item.name}`);
+        return result.rows[0];
+    }
+
+    async delete(id: string): Promise<void> {
+        const result = await pool.query('DELETE FROM menu WHERE id = $1', [id]);
+
+        if (result.rowCount === 0) {
+            throw new Error('Delete failed, item not found');
+        }
+
+        logger(`Delete menu item with id: ${id}`)
+    }
 }

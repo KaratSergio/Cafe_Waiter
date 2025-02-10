@@ -13,14 +13,29 @@ export class MenuController {
 
     static async addItem(req: Request, res: Response) {
         try {      
-            const item = await menuService.addMenuItem(req.body)
-            res.status(201).json(item)
+            const item = await menuService.addMenuItem(req.body);
+            res.status(201).json(item);
         } catch (error) {
-            if (error instanceof Error) {
-                res.status(400).json({error: error.message})
-            } else {
-                res.status(500).json({error: "Internal Server Error"})
-            }
+            res.status(400).json({ error: error instanceof Error ? error.message : 'Internal Server Error' });
+        }
+    }
+
+    static async updateItem(req: Request, res: Response) {
+        try {
+            const updatedItem = await menuService.updateMenuItem(req.params.id, req.body);
+            res.status(200).json(updatedItem);
+        } catch (error) {
+            res.status(400).json({ error: error instanceof Error ? error.message : 'Internal Server Error' });
+        }
+    }
+
+    static async deleteItem(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            await menuService.deleteMenuItem(id);
+            res.status(204).send();
+        } catch (error) {
+            res.status(400).json({ error: error instanceof Error ? error.message : 'Internal Server Error' });
         }
     }
 }
