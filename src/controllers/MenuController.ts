@@ -1,41 +1,34 @@
 import { Request, Response } from "express";
 import { MenuService } from "../services/MenuService";
-import { InMemoryMenuRepository } from "../repositories/inMemory/InMemoryMenuRepository";
-// import { PostgresMenuRepository } from "../repositories/postgreSQL/PostgresMenuRepository";
+import { asyncHandler } from "../utils/asyncHandler";
+// import { InMemoryMenuRepository } from "../repositories/inMemory/InMemoryMenuRepository";
+import { PostgresMenuRepository } from "../repositories/postgreSQL/PostgresMenuRepository";
 
-const menuService = new MenuService(new InMemoryMenuRepository())
-// const menuService = new MenuService(new PostgresMenuRepository())
+// const menuService = new MenuService(new InMemoryMenuRepository())
+const menuService = new MenuService(new PostgresMenuRepository())
 
 export class MenuController {
     static async getAll(req: Request, res: Response) {
         res.json(await menuService.getMenu());
     }
 
-    static async addItem(req: Request, res: Response) {
-        try {      
-            const item = await menuService.addMenuItem(req.body);
-            res.status(201).json(item);
-        } catch (error) {
-            res.status(400).json({ error: error instanceof Error ? error.message : 'Internal Server Error' });
-        }
-    }
+    static addItem = asyncHandler(async (req: Request, res: Response) => {
+            const { name, description, price } = req.body;
+            if (!name || !description || price === undefined) {
+                throw new Error('All fields (name, description, price) are required.');
+            }
 
-    static async updateItem(req: Request, res: Response) {
-        try {
+            const item = await menuService.addMenuItem({ id: '', name, description, price });
+            res.status(201).json(item);
+    })
+
+    static updateItem = asyncHandler(async (req: Request, res: Response) => {
             const updatedItem = await menuService.updateMenuItem(req.params.id, req.body);
             res.status(200).json(updatedItem);
-        } catch (error) {
-            res.status(400).json({ error: error instanceof Error ? error.message : 'Internal Server Error' });
-        }
-    }
+    })
 
-    static async deleteItem(req: Request, res: Response) {
-        try {
-            const { id } = req.params;
-            await menuService.deleteMenuItem(id);
+    static deleteItem = asyncHandler(async(req: Request, res: Response) => {
+            await menuService.deleteMenuItem(req.params.id);
             res.status(204).send();
-        } catch (error) {
-            res.status(400).json({ error: error instanceof Error ? error.message : 'Internal Server Error' });
-        }
-    }
+    })
 }

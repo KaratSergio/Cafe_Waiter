@@ -21,8 +21,8 @@ export class PostgresMenuRepository implements MenuRepository {
     
     async create(item: MenuItem): Promise<MenuItem> { 
         const result = await pool.query(
-            'INSERT INTO menu (name, price) VALUES ($1, $2) RETURNING *',
-            [item.name, item.price]
+            'INSERT INTO menu (name, description, price) VALUES ($1, $2, $3) RETURNING *',
+            [item.name, item.description, item.price]
         )
         logger(`Added menu item: ${item.name}`);
         return result.rows[0];
@@ -30,8 +30,8 @@ export class PostgresMenuRepository implements MenuRepository {
     
     async update(item: MenuItem): Promise<MenuItem> {
         const result = await pool.query(
-            'UPDATE menu SET name = $1, price = $2 WHERE id = $3 RETURNING *',
-            [item.name, item.price, item.id]
+            'UPDATE menu SET name = $1, description = $2, price = $3 WHERE id = $4 RETURNING *',
+            [item.name, item.description, item.price, item.id]
         );
 
         if (result.rowCount === 0) {
