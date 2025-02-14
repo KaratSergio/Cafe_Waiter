@@ -18,10 +18,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/joi": "^17.2.2",
     "@types/node": "^22.13.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "fast-glob": "^3.3.3",
+    "joi": "^17.13.3",
     "lru-cache": "^11.0.2",
     "pg": "^8.13.1"
   },

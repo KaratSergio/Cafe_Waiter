@@ -1,6 +1,7 @@
 import { OrderRepository } from "../repositories/OrderRepository";
 import { MenuItem } from "../models/MenuItem";
 import { Order, OrderItem } from "../models/Orders";
+import { HttpError } from '../utils/httpError';
 
 export class OrderService {
     #orderRepo: OrderRepository;
@@ -13,15 +14,15 @@ export class OrderService {
         return this.#orderRepo.getAll();
     }
 
-    async createOrder(items: MenuItem[]): Promise<Order> {
+    async createOrder(items: {menuItem: MenuItem, quantity: number } []): Promise<Order> {
         if (items.length === 0) {
-            throw new Error('Order must contain at least one item')
+            throw new HttpError (400, 'Order must contain at least one item')
         }
 
         const orderItems: OrderItem[] = items.map((item) => ({
-            menuItem: item,
-            quantity: 1,
-        }))
+        menuItem: item.menuItem,
+        quantity: item.quantity || 1, 
+        }));
 
         const totalPrice = orderItems.reduce((sum, item) => sum + item.menuItem.price * item.quantity, 0)
 
