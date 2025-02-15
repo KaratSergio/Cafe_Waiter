@@ -7,10 +7,10 @@ app.use(express.json());
 app.use('/menu', menuRoutes);
 
 describe('Menu Routes', () => {
-    it('GET /menu - should return all menu item list', async () => {
-        const response = await request(app).get('/menu');
+  it('GET /menu - should return all menu item list', async () => {
+    const response = await request(app).get('/menu');
 
-        expect(response.status).toBe(200);
-        expect(Array.isArray(response.body)).toBeTruthy();
-    });
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body)).toBeTruthy();
+  });
 });

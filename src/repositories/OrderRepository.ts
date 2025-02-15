@@ -1,8 +1,8 @@
-import { Order } from "../models/Orders";
+import { Order } from '../models/Orders';
 
-export interface OrderRepository{
-    getAll(): Promise<Order[]>;
-    getById(id: string): Promise<Order | null>;
-    create(order: Order): Promise<Order>;
-    archiveOrders(orderCreatedDates: Record<string, Date>): Promise<void>;
+export interface OrderRepository {
+  getAll(): Promise<Order[]>;
+  getById(id: string): Promise<Order | null>;
+  create(order: Order): Promise<Order>;
+  archiveOrders(orderCreatedDates: Record<string, Date>): Promise<void>;
 }

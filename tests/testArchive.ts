@@ -10,10 +10,12 @@ async function testArchiveOrders() {
   const orderService = new OrderService(orderRepo);
 
   try {
-    await orderService.archiveOrders(); 
+    await orderService.archiveOrders();
     logger('Archiving completed');
   } catch (error) {
-    logger(`Error while archiving: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+    logger(
+      `Error while archiving: ${error instanceof Error ? error.message : JSON.stringify(error)}`,
+    );
   }
 }
 
