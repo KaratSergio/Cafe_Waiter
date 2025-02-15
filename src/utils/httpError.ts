@@ -1,9 +1,5 @@
-export class HttpError extends Error {
-    status: number;
-
-    constructor(status: number, message: string) {
-        super(message);
-        this.status = status;
-        Object.setPrototypeOf(this, HttpError.prototype);
-    }
+export const HttpError = (status: number, message: string) => {
+    const error = new Error(message) as Error & { status: number };
+    error.status = status;
+    return error
 }

@@ -1,4 +1,6 @@
 import Joi, { ObjectSchema } from 'joi';
+import createError from 'http-errors';
+import { Request, Response, NextFunction } from "express";
 
 // schema
 export const menuItemSchema = Joi.object({
@@ -17,12 +19,14 @@ export const orderSchema = Joi.object({
 });
 
 // function validator
-export const validateData = <T>(schema: ObjectSchema<T>, data: unknown): T => {
-    const { error, value } = schema.validate(data, { abortEarly: false, stripUnknown: true });
+export const validateData = <T>(schema: ObjectSchema<T>) =>
+    (req: Request, res: Response, next: NextFunction) => {
+    const { error, value } = schema.validate(req.body, { abortEarly: false, stripUnknown: true });
 
     if (error) {
-        throw new Error(error.details.map((detail) => detail.message).join(', '));
+    return next(createError(400, error.details.map((detail) => detail.message).join(', ')));
     }
 
-    return value;
+    req.body = value;
+    next();
 };

@@ -16,7 +16,7 @@ export class OrderService {
 
     async createOrder(items: {menuItem: MenuItem, quantity: number } []): Promise<Order> {
         if (items.length === 0) {
-            throw new HttpError (400, 'Order must contain at least one item')
+            throw HttpError (400, 'Order must contain at least one item')
         }
 
         const orderItems: OrderItem[] = items.map((item) => ({

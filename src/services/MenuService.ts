@@ -15,12 +15,12 @@ export class MenuService {
 
     async addMenuItem(item: MenuItem): Promise<MenuItem> {
         if (item.price < 0) {
-            throw new HttpError(400, 'Price cannot be negative');
+            throw HttpError(400, 'Price cannot be negative');
         }
 
         const existingItem = await this.#menuRepo.getByName(item.name);
         if (existingItem) {
-            throw new HttpError(409, 'Item with this name already exists');
+            throw HttpError(409, 'Item with this name already exists');
         }
         
         return this.#menuRepo.create(item);
@@ -29,13 +29,13 @@ export class MenuService {
     async updateMenuItem(id: string, updates: Partial<MenuItem>): Promise<MenuItem> {
     const existingItem = await this.#menuRepo.getById(id);
     if (!existingItem) {
-        throw new HttpError(404, 'Item not found');
+        throw HttpError(404, 'Item not found');
     }
 
     if (updates.name) {
         const duplicate = await this.#menuRepo.getByName(updates.name);
         if (duplicate && duplicate.id !== id) {
-            throw new HttpError(409, 'Item with this name already exists');
+            throw HttpError(409, 'Item with this name already exists');
         }
     }
 
@@ -45,7 +45,7 @@ export class MenuService {
     async deleteMenuItem(id: string): Promise<void> {
         const existingItem = await this.#menuRepo.getById(id)
         if (!existingItem) {
-            throw new HttpError(404, 'Item not found');
+            throw HttpError(404, 'Item not found');
         }
 
         return this.#menuRepo.delete(id);
