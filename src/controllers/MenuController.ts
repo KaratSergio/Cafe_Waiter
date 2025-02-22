@@ -17,12 +17,14 @@ export class MenuController {
   }
 
   static async updateItem(req: Request, res: Response) {
-    const updatedItem = await menuService.updateMenuItem(req.params.id, req.body);
+    const id = BigInt(req.params.id);
+    const updatedItem = await menuService.updateMenuItem(id, req.body);
     res.status(200).json(updatedItem);
   }
 
   static async deleteItem(req: Request, res: Response) {
-    await menuService.deleteMenuItem(req.params.id);
+    const id = BigInt(req.params.id);
+    await menuService.deleteMenuItem(id);
     res.status(204).send();
   }
 }

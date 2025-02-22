@@ -9,7 +9,7 @@ export class PostgresMenuRepository implements MenuRepository {
     return result.rows;
   }
 
-  async getById(id: string): Promise<MenuItem | null> {
+  async getById(id: bigint): Promise<MenuItem | null> {
     const result = await pool.query('SELECT * FROM menu WHERE id = $1', [id]);
     return result.rows[0] || null;
   }
@@ -20,19 +20,22 @@ export class PostgresMenuRepository implements MenuRepository {
   }
 
   async create(item: MenuItem): Promise<MenuItem> {
-    const result = await pool.query(
-      'INSERT INTO menu (name, description, price) VALUES ($1, $2, $3) RETURNING *',
-      [item.name, item.description, item.price],
-    );
+    const result = await pool.query('INSERT INTO menu (name, description, price) VALUES ($1, $2, $3) RETURNING *', [
+      item.name,
+      item.description,
+      item.price,
+    ]);
     logger(`Added menu item: ${item.name}`);
     return result.rows[0];
   }
 
   async update(item: MenuItem): Promise<MenuItem> {
-    const result = await pool.query(
-      'UPDATE menu SET name = $1, description = $2, price = $3 WHERE id = $4 RETURNING *',
-      [item.name, item.description, item.price, item.id],
-    );
+    const result = await pool.query('UPDATE menu SET name = $1, description = $2, price = $3 WHERE id = $4 RETURNING *', [
+      item.name,
+      item.description,
+      item.price,
+      item.id,
+    ]);
 
     if (result.rowCount === 0) {
       throw new Error('Update field, item not found');
@@ -42,7 +45,7 @@ export class PostgresMenuRepository implements MenuRepository {
     return result.rows[0];
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: bigint): Promise<void> {
     const result = await pool.query('DELETE FROM menu WHERE id = $1', [id]);
 
     if (result.rowCount === 0) {

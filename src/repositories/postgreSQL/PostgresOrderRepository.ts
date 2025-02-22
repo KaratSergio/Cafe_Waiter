@@ -40,7 +40,7 @@ export class PostgresOrderRepository implements OrderRepository {
     return orders;
   }
 
-  async getById(id: string): Promise<Order | null> {
+  async getById(id: bigint): Promise<Order | null> {
     const result = await pool.query('SELECT * FROM orders WHERE id = $1', [id]);
     return result.rows[0] || null;
   }
@@ -49,25 +49,24 @@ export class PostgresOrderRepository implements OrderRepository {
     const today = new Date();
     const dateStr = today.toISOString().split('T')[0].replace(/-/g, '');
 
-    const countResult = await pool.query(
-      'SELECT COUNT(*) AS count FROM orders WHERE order_number LIKE $1',
-      [`${dateStr}-%`],
-    );
+    const countResult = await pool.query('SELECT COUNT(*) AS count FROM orders WHERE order_number LIKE $1', [`${dateStr}-%`]);
     const orderCount = parseInt(countResult.rows[0].count, 10) + 1;
     const orderNumber = `${dateStr}-${orderCount}`;
 
-    const result = await pool.query(
-      'INSERT INTO orders (order_number, total_price, status) VALUES ($1, $2, $3) RETURNING *',
-      [orderNumber, order.totalPrice, order.status],
-    );
+    const result = await pool.query('INSERT INTO orders (order_number, total_price, status) VALUES ($1, $2, $3) RETURNING *', [
+      orderNumber,
+      order.totalPrice,
+      order.status,
+    ]);
 
     const createdOrder = result.rows[0];
 
     for (const item of order.items) {
-      await pool.query(
-        'INSERT INTO order_items (order_id, menu_item_id, quantity) VALUES ($1, $2, $3)',
-        [createdOrder.id, item.menuItem.id, item.quantity],
-      );
+      await pool.query('INSERT INTO order_items (order_id, menu_item_id, quantity) VALUES ($1, $2, $3)', [
+        createdOrder.id,
+        item.menuItem.id,
+        item.quantity,
+      ]);
     }
 
     logger(`Created order with ID: ${createdOrder.id}, Number: ${createdOrder.orderNumber}`);

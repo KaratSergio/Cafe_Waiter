@@ -26,7 +26,7 @@ export class MenuService {
     return this.#menuRepo.create(item);
   }
 
-  async updateMenuItem(id: string, updates: Partial<MenuItem>): Promise<MenuItem> {
+  async updateMenuItem(id: bigint, updates: Partial<MenuItem>): Promise<MenuItem> {
     const existingItem = await this.#menuRepo.getById(id);
     if (!existingItem) {
       throw HttpError(404, 'Item not found');
@@ -34,7 +34,7 @@ export class MenuService {
 
     if (updates.name) {
       const duplicate = await this.#menuRepo.getByName(updates.name);
-      if (duplicate && duplicate.id !== id) {
+      if (duplicate && duplicate.id !== id.toString()) {
         throw HttpError(409, 'Item with this name already exists');
       }
     }
@@ -42,7 +42,7 @@ export class MenuService {
     return this.#menuRepo.update({ ...existingItem, ...updates });
   }
 
-  async deleteMenuItem(id: string): Promise<void> {
+  async deleteMenuItem(id: bigint): Promise<void> {
     const existingItem = await this.#menuRepo.getById(id);
     if (!existingItem) {
       throw HttpError(404, 'Item not found');
