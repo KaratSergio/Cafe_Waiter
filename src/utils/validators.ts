@@ -9,6 +9,12 @@ export const menuItemSchema = Joi.object({
   price: Joi.number().min(0).required(),
 });
 
+export const updateMenuItemSchema = Joi.object({
+  name: Joi.string().min(3).max(50),
+  description: Joi.string().max(500),
+  price: Joi.number().min(0),
+}).min(1);
+
 export const orderSchema = Joi.object({
   items: Joi.array()
     .items(

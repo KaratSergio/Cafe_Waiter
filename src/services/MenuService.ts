@@ -34,12 +34,12 @@ export class MenuService {
 
     if (updates.name) {
       const duplicate = await this.#menuRepo.getByName(updates.name);
-      if (duplicate && duplicate.id !== id.toString()) {
+      if (duplicate && duplicate.id !== id) {
         throw HttpError(409, 'Item with this name already exists');
       }
     }
 
-    return this.#menuRepo.update({ ...existingItem, ...updates });
+    return this.#menuRepo.update({ ...existingItem, ...updates, id: BigInt(existingItem.id) });
   }
 
   async deleteMenuItem(id: bigint): Promise<void> {

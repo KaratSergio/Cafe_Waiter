@@ -29,29 +29,25 @@ export class PostgresMenuRepository implements MenuRepository {
     return result.rows[0];
   }
 
-  async update(item: MenuItem): Promise<MenuItem> {
-    const result = await pool.query('UPDATE menu SET name = $1, description = $2, price = $3 WHERE id = $4 RETURNING *', [
-      item.name,
-      item.description,
-      item.price,
-      item.id,
-    ]);
+  async update(item: Partial<MenuItem> & { id: bigint }): Promise<MenuItem> {
+    const fields = Object.keys(item).filter((key) => key !== 'id');
 
-    if (result.rowCount === 0) {
-      throw new Error('Update field, item not found');
-    }
+    const query = `
+    UPDATE menu 
+    SET ${fields.map((key, index) => `${key} = $${index + 2}`).join(', ')}
+    WHERE id = $1 
+    RETURNING *;
+    `;
+
+    const values = [item.id, ...fields.map((key) => (item as any)[key])];
+    const result = await pool.query(query, values);
 
     logger(`Updated menu item: ${item.name}`);
     return result.rows[0];
   }
 
   async delete(id: bigint): Promise<void> {
-    const result = await pool.query('DELETE FROM menu WHERE id = $1', [id]);
-
-    if (result.rowCount === 0) {
-      throw new Error('Delete failed, item not found');
-    }
-
+    await pool.query('DELETE FROM menu WHERE id = $1', [id]);
     logger(`Delete menu item with id: ${id}`);
   }
 }
