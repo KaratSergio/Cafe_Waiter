@@ -24,10 +24,7 @@ export class OrderService {
       quantity: item.quantity || 1,
     }));
 
-    const totalPrice = orderItems.reduce(
-      (sum, item) => sum + item.menuItem.price * item.quantity,
-      0,
-    );
+    const totalPrice = orderItems.reduce((sum, item) => sum + item.menuItem.price * item.quantity, 0);
 
     const newOrder: Order = {
       id: '',
@@ -40,8 +37,7 @@ export class OrderService {
     return this.#orderRepo.create(newOrder);
   }
 
-  async archiveOrders(): Promise<void> {
-    const orderCreatedDates: Record<string, Date> = {};
-    return this.#orderRepo.archiveOrders(orderCreatedDates);
+  async archiveOrders(date: string): Promise<void> {
+    await this.#orderRepo.archiveOrders(date);
   }
 }

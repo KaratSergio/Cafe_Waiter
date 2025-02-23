@@ -15,4 +15,10 @@ export class OrderController {
   static async getAll(req: Request, res: Response) {
     res.json(await orderService.getOrders());
   }
+
+  static async archive(req: Request, res: Response) {
+    const { date } = req.body;
+    await orderService.archiveOrders(date);
+    return res.status(200).send(`Orders for ${date} have been moved to archive`);
+  }
 }
