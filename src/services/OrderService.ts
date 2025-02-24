@@ -14,9 +14,9 @@ export class OrderService {
     return this.#orderRepo.getAll();
   }
 
-  async createOrder(items: { menuItem: MenuItem; quantity: number }[]): Promise<Order> {
-    if (items.length === 0) {
-      throw HttpError(400, 'Order must contain at least one item');
+  async createOrder(items: { menuItem: MenuItem; quantity: number }[], tableId: number): Promise<Order> {
+    if (items.length === 0 || tableId === undefined) {
+      throw HttpError(400, 'Order must contain at least one item and table number');
     }
 
     const orderItems: OrderItem[] = items.map((item) => ({
@@ -29,6 +29,7 @@ export class OrderService {
     const newOrder: Order = {
       id: '',
       orderNumber: '',
+      tableId,
       items: orderItems,
       totalPrice,
       status: 'pending',

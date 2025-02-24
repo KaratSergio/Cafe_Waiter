@@ -8,7 +8,8 @@ const orderService = new OrderService(new PostgresOrderRepository());
 
 export class OrderController {
   static async create(req: Request, res: Response) {
-    const order = await orderService.createOrder(req.body.items);
+    const { items, tableId } = req.body;
+    const order = await orderService.createOrder(items, tableId);
     res.status(201).json(order);
   }
 

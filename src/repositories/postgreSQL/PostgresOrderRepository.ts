@@ -6,7 +6,7 @@ import { logger } from '../../utils/logger';
 export class PostgresOrderRepository implements OrderRepository {
   async getAll(): Promise<Order[]> {
     const ordersResult = await pool.query(`
-        SELECT id, order_number AS "orderNumber", total_price AS "totalPrice", status
+        SELECT id, order_number AS "orderNumber", total_price AS "totalPrice", status, table_id AS "tableId"
         FROM orders
     `);
 
@@ -53,11 +53,10 @@ export class PostgresOrderRepository implements OrderRepository {
     const orderCount = parseInt(countResult.rows[0].count, 10) + 1;
     const orderNumber = `${dateStr}-${orderCount}`;
 
-    const result = await pool.query('INSERT INTO orders (order_number, total_price, status) VALUES ($1, $2, $3) RETURNING *', [
-      orderNumber,
-      order.totalPrice,
-      order.status,
-    ]);
+    const result = await pool.query(
+      'INSERT INTO orders (order_number, total_price, status, table_id) VALUES ($1, $2, $3, $4) RETURNING *',
+      [orderNumber, order.totalPrice, order.status, order.tableId],
+    );
 
     const createdOrder = result.rows[0];
 

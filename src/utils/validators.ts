@@ -16,6 +16,7 @@ export const updateMenuItemSchema = Joi.object({
 }).min(1);
 
 export const orderSchema = Joi.object({
+  tableId: Joi.number().required(),
   items: Joi.array()
     .items(
       Joi.object({

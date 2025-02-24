@@ -9,6 +9,7 @@ export interface Order {
   id: string;
   orderNumber: string;
   items: OrderItem[];
+  tableId: number;
   totalPrice: number;
   status: 'pending' | 'preparing' | 'ready' | 'archived';
 }
