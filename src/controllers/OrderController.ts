@@ -2,9 +2,10 @@ import { Request, Response } from 'express';
 import { OrderService } from '../services/OrderService';
 // import { InMemoryOrderRepository } from "../repositories/inMemory/InMemoryOrderRepository";
 import { PostgresOrderRepository } from '../repositories/postgreSQL/PostgresOrderRepository';
+import { PostgresTableRepository } from '../repositories/postgreSQL/PostgresTableRepository';
 
 // const orderService = new OrderService(new InMemoryOrderRepository())
-const orderService = new OrderService(new PostgresOrderRepository());
+const orderService = new OrderService(new PostgresOrderRepository(), new PostgresTableRepository());
 
 export class OrderController {
   static async create(req: Request, res: Response) {

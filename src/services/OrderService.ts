@@ -1,13 +1,16 @@
 import { OrderRepository } from '../repositories/OrderRepository';
+import { TableRepository } from '../repositories/TableRepository';
 import { MenuItem } from '../models/MenuItem';
 import { Order, OrderItem } from '../models/Orders';
 import { HttpError } from '../utils/httpError';
 
 export class OrderService {
   #orderRepo: OrderRepository;
+  #tableRepo: TableRepository;
 
-  constructor(orderRepo: OrderRepository) {
+  constructor(orderRepo: OrderRepository, tableRepo: TableRepository) {
     this.#orderRepo = orderRepo;
+    this.#tableRepo = tableRepo;
   }
 
   async getOrders(): Promise<Order[]> {
@@ -35,7 +38,9 @@ export class OrderService {
       status: 'pending',
     };
 
-    return this.#orderRepo.create(newOrder);
+    const createOrder = await this.#orderRepo.create(newOrder);
+    await this.#tableRepo.updateTableStatus(tableId, totalPrice);
+    return createOrder;
   }
 
   async archiveOrders(date: string): Promise<void> {
