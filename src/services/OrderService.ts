@@ -43,6 +43,10 @@ export class OrderService {
     return createOrder;
   }
 
+  async processPayment(tableId: number): Promise<void> {
+    await this.#tableRepo.archiveTableOrders(tableId);
+  }
+
   async archiveOrders(date: string): Promise<void> {
     await this.#orderRepo.archiveOrders(date);
   }

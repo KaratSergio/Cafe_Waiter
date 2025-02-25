@@ -23,4 +23,10 @@ export class OrderController {
     await orderService.archiveOrders(date);
     return res.status(200).send(`Orders for ${date} have been moved to archive`);
   }
+
+  static async payForTable(req: Request, res: Response) {
+    const tableId = parseInt(req.params.tableId, 10);
+    await orderService.processPayment(tableId);
+    res.json({ message: 'Table payment archived successfully' });
+  }
 }
