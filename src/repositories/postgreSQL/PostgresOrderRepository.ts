@@ -4,6 +4,55 @@ import { OrderRepository } from '../OrderRepository';
 import { logger } from '../../utils/logger';
 
 export class PostgresOrderRepository implements OrderRepository {
+  // VISITORS pg query
+  async create(order: Order): Promise<Order> {
+    const today = new Date();
+    const dateStr = today.toISOString().split('T')[0].replace(/-/g, '');
+
+    const countResult = await pool.query('SELECT COUNT(*) AS count FROM orders WHERE order_number LIKE $1', [`${dateStr}-%`]);
+    const orderCount = parseInt(countResult.rows[0].count, 10) + 1;
+    const orderNumber = `${dateStr}-${orderCount}`;
+
+    const result = await pool.query(
+      'INSERT INTO orders (order_number, total_price, status, table_id) VALUES ($1, $2, $3, $4) RETURNING *',
+      [orderNumber, order.totalPrice, order.status, order.tableId],
+    );
+
+    const createdOrder = result.rows[0];
+
+    for (const item of order.items) {
+      await pool.query('INSERT INTO order_items (order_id, menu_item_id, quantity) VALUES ($1, $2, $3)', [
+        createdOrder.id,
+        item.menuItem.id,
+        item.quantity,
+      ]);
+    }
+
+    logger(`Created order with ID: ${createdOrder.id}, Number: ${createdOrder.orderNumber}`);
+    return createdOrder;
+  }
+
+  async getOrdersByTableId(tableId: number): Promise<Order[]> {
+    const result = await pool.query(
+      `  
+      SELECT id, order_number AS "orderNumber", total_price AS "totalPrice", status FROM orders WHERE table_id = $1
+      `,
+      [tableId],
+    );
+    return result.rows;
+  }
+
+  async getOrderByTableId(tableId: number, orderId: number): Promise<Order | null> {
+    const result = await pool.query(
+      `
+      SELECT id, order_number AS "orderNumber", total_price AS "totalPrice", status FROM orders WHERE table_id = $1 and id = $2
+      `,
+      [tableId, orderId],
+    );
+    return result.rows[0] || null;
+  }
+
+  // ADMIN pg query
   async getAll(): Promise<Order[]> {
     const ordersResult = await pool.query(`
         SELECT id, order_number AS "orderNumber", total_price AS "totalPrice", status, table_id AS "tableId"
@@ -40,36 +89,12 @@ export class PostgresOrderRepository implements OrderRepository {
     return orders;
   }
 
-  async getById(id: bigint): Promise<Order | null> {
-    const result = await pool.query('SELECT * FROM orders WHERE id = $1', [id]);
-    return result.rows[0] || null;
-  }
-
-  async create(order: Order): Promise<Order> {
-    const today = new Date();
-    const dateStr = today.toISOString().split('T')[0].replace(/-/g, '');
-
-    const countResult = await pool.query('SELECT COUNT(*) AS count FROM orders WHERE order_number LIKE $1', [`${dateStr}-%`]);
-    const orderCount = parseInt(countResult.rows[0].count, 10) + 1;
-    const orderNumber = `${dateStr}-${orderCount}`;
-
+  async getById(id: number): Promise<Order | null> {
     const result = await pool.query(
-      'INSERT INTO orders (order_number, total_price, status, table_id) VALUES ($1, $2, $3, $4) RETURNING *',
-      [orderNumber, order.totalPrice, order.status, order.tableId],
+      `SELECT id, order_number AS "orderNumber", total_price AS "totalPrice", status, table_id AS "tableId" FROM orders WHERE id = $1`,
+      [id],
     );
-
-    const createdOrder = result.rows[0];
-
-    for (const item of order.items) {
-      await pool.query('INSERT INTO order_items (order_id, menu_item_id, quantity) VALUES ($1, $2, $3)', [
-        createdOrder.id,
-        item.menuItem.id,
-        item.quantity,
-      ]);
-    }
-
-    logger(`Created order with ID: ${createdOrder.id}, Number: ${createdOrder.orderNumber}`);
-    return createdOrder;
+    return result.rows[0] || null;
   }
 
   async archiveOrders(date: string): Promise<void> {

@@ -14,19 +14,40 @@ export class OrderController {
     res.status(201).json(order);
   }
 
-  static async getAll(req: Request, res: Response) {
-    res.json(await orderService.getOrders());
+  // VISITORS controllers
+  static async getOrdersByTable(req: Request, res: Response) {
+    const tableId = parseInt(req.params.tableId, 10);
+    const orders = await orderService.getAllOrdersByTableId(tableId);
+    res.json(orders);
   }
 
-  static async archive(req: Request, res: Response) {
-    const { date } = req.body;
-    await orderService.archiveOrders(date);
-    return res.status(200).send(`Orders for ${date} have been moved to archive`);
+  static async getOrderByTableAndOrderId(req: Request, res: Response) {
+    const tableId = parseInt(req.params.tableId, 10);
+    const orderId = parseInt(req.params.orderId, 10);
+    const order = await orderService.getOneOrderByTableId(tableId, orderId);
+    res.json(order);
   }
 
   static async payForTable(req: Request, res: Response) {
     const tableId = parseInt(req.params.tableId, 10);
     await orderService.processPayment(tableId);
     res.json({ message: 'Table payment archived successfully' });
+  }
+
+  // ADMIN controllers
+  static async getAll(req: Request, res: Response) {
+    res.json(await orderService.getOrders());
+  }
+
+  static async getById(req: Request, res: Response) {
+    const orderId = parseInt(req.params.orderId, 10);
+    const order = await orderService.getOrderById(orderId);
+    res.json(order);
+  }
+
+  static async archive(req: Request, res: Response) {
+    const { date } = req.body;
+    await orderService.archiveOrders(date);
+    return res.status(200).send(`Orders for ${date} have been moved to archive`);
   }
 }

@@ -13,10 +13,7 @@ export class OrderService {
     this.#tableRepo = tableRepo;
   }
 
-  async getOrders(): Promise<Order[]> {
-    return this.#orderRepo.getAll();
-  }
-
+  // VISITORS service
   async createOrder(items: { menuItem: MenuItem; quantity: number }[], tableId: number): Promise<Order> {
     if (items.length === 0 || tableId === undefined) {
       throw HttpError(400, 'Order must contain at least one item and table number');
@@ -43,8 +40,25 @@ export class OrderService {
     return createOrder;
   }
 
+  async getAllOrdersByTableId(tableId: number): Promise<Order[]> {
+    return this.#orderRepo.getOrdersByTableId(tableId);
+  }
+
+  async getOneOrderByTableId(tableId: number, orderId: number): Promise<Order | null> {
+    return this.#orderRepo.getOrderByTableId(tableId, orderId);
+  }
+
   async processPayment(tableId: number): Promise<void> {
     await this.#tableRepo.archiveTableOrders(tableId);
+  }
+
+  // ADMIN service
+  async getOrders(): Promise<Order[]> {
+    return this.#orderRepo.getAll();
+  }
+
+  async getOrderById(orderId: number): Promise<Order | null> {
+    return this.#orderRepo.getById(orderId);
   }
 
   async archiveOrders(date: string): Promise<void> {

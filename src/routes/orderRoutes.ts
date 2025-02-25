@@ -5,9 +5,13 @@ import { asyncHandler } from '../utils/asyncHandler';
 import { isAdmin } from '../utils/adminMiddleware';
 
 export const orderRoutes = Router();
-orderRoutes.get('/', asyncHandler(OrderController.getAll));
+// VISITORS routes
+orderRoutes.get('/:tableId/orders', asyncHandler(OrderController.getOrdersByTable));
+orderRoutes.get('/:tableId/:orderId', asyncHandler(OrderController.getOrderByTableAndOrderId));
 orderRoutes.post('/', validateData(orderSchema), asyncHandler(OrderController.create));
 orderRoutes.post('/:tableId/pay', asyncHandler(OrderController.payForTable));
 
-// Admin routes
+// ADMIN routes
+orderRoutes.get('/', isAdmin, asyncHandler(OrderController.getAll));
+orderRoutes.get('/:orderId', isAdmin, asyncHandler(OrderController.getById));
 orderRoutes.post('/archive', isAdmin, asyncHandler(OrderController.archive));

@@ -4,6 +4,7 @@ import { MenuRepository } from '../MenuRepository';
 import { logger } from '../../utils/logger';
 
 export class PostgresMenuRepository implements MenuRepository {
+  // VISITORS pg query
   async getAll(): Promise<MenuItem[]> {
     const result = await pool.query('SELECT * FROM menu');
     return result.rows;
@@ -19,6 +20,7 @@ export class PostgresMenuRepository implements MenuRepository {
     return result.rows[0] || null;
   }
 
+  // ADMIN pg query
   async create(item: MenuItem): Promise<MenuItem> {
     const result = await pool.query('INSERT INTO menu (name, description, price) VALUES ($1, $2, $3) RETURNING *', [
       item.name,

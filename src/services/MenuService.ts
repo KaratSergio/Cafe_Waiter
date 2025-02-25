@@ -9,10 +9,12 @@ export class MenuService {
     this.#menuRepo = menuRepo;
   }
 
+  // VISITORS service
   async getMenu(): Promise<MenuItem[]> {
     return this.#menuRepo.getAll();
   }
 
+  // ADMIN service
   async addMenuItem(item: MenuItem): Promise<MenuItem> {
     if (item.price < 0) {
       throw HttpError(400, 'Price cannot be negative');
