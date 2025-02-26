@@ -1,6 +1,6 @@
 import { pool } from '../../db/postgreSQL';
 import { MenuItem } from '../../models/MenuItem';
-import { MenuRepository } from '../MenuRepository';
+import { MenuRepository } from '../interfaces/MenuRepository';
 import { logger } from '../../utils/logger';
 
 export class PostgresMenuRepository implements MenuRepository {

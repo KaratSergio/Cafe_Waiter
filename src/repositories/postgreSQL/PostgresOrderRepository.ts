@@ -1,21 +1,14 @@
 import { pool } from '../../db/postgreSQL';
 import { Order } from '../../models/Orders';
-import { OrderRepository } from '../OrderRepository';
+import { OrderRepository } from '../interfaces/OrderRepository';
 import { logger } from '../../utils/logger';
 
 export class PostgresOrderRepository implements OrderRepository {
   // VISITORS pg query
   async create(order: Order): Promise<Order> {
-    const today = new Date();
-    const dateStr = today.toISOString().split('T')[0].replace(/-/g, '');
-
-    const countResult = await pool.query('SELECT COUNT(*) AS count FROM orders WHERE order_number LIKE $1', [`${dateStr}-%`]);
-    const orderCount = parseInt(countResult.rows[0].count, 10) + 1;
-    const orderNumber = `${dateStr}-${orderCount}`;
-
     const result = await pool.query(
-      'INSERT INTO orders (order_number, total_price, status, table_id) VALUES ($1, $2, $3, $4) RETURNING *',
-      [orderNumber, order.totalPrice, order.status, order.tableId],
+      'INSERT INTO orders (order_number, total_price, status, table_id) VALUES (generate_order_number(), $1, $2, $3) RETURNING *',
+      [order.totalPrice, order.status, order.tableId],
     );
 
     const createdOrder = result.rows[0];
@@ -28,7 +21,7 @@ export class PostgresOrderRepository implements OrderRepository {
       ]);
     }
 
-    logger(`Created order with ID: ${createdOrder.id}, Number: ${createdOrder.orderNumber}`);
+    logger(`Created order with ID: ${createdOrder.id}, Number: ${createdOrder.order_number}`);
     return createdOrder;
   }
 

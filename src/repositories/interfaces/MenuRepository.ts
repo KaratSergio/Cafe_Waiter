@@ -1,4 +1,4 @@
-import { MenuItem } from '../models/MenuItem';
+import { MenuItem } from '../../models/MenuItem';
 
 export interface MenuRepository {
   // VISITORS repo interface

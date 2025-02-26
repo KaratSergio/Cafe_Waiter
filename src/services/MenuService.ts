@@ -1,4 +1,4 @@
-import { MenuRepository } from '../repositories/MenuRepository';
+import { MenuRepository } from '../repositories/interfaces/MenuRepository';
 import { MenuItem } from '../models/MenuItem';
 import { HttpError } from '../utils/httpError';
 import { ALLOWED_CATEGORIES } from '../constants/menu';

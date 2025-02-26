@@ -1,5 +1,5 @@
 import { pool } from '../../db/postgreSQL';
-import { TableRepository } from '../TableRepository';
+import { TableRepository } from '../interfaces/TableRepository';
 
 export class PostgresTableRepository implements TableRepository {
   // VISITORS pg query

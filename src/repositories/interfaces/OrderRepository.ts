@@ -1,4 +1,4 @@
-import { Order } from '../models/Orders';
+import { Order } from '../../models/Orders';
 
 export interface OrderRepository {
   // VISITORS repo interface

@@ -1,5 +1,5 @@
-import { OrderRepository } from '../repositories/OrderRepository';
-import { TableRepository } from '../repositories/TableRepository';
+import { OrderRepository } from '../repositories/interfaces/OrderRepository';
+import { TableRepository } from '../repositories/interfaces/TableRepository';
 import { MenuItem } from '../models/MenuItem';
 import { Order, OrderItem } from '../models/Orders';
 import { HttpError } from '../utils/httpError';
@@ -27,8 +27,6 @@ export class OrderService {
     const totalPrice = orderItems.reduce((sum, item) => sum + item.menuItem.price * item.quantity, 0);
 
     const newOrder: Order = {
-      id: '',
-      orderNumber: '',
       tableId,
       items: orderItems,
       totalPrice,
