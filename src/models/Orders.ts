@@ -12,7 +12,7 @@ export interface Order {
   status: 'pending' | 'preparing' | 'ready' | 'archived';
 }
 
-export interface TestOrder extends Order {
-  isArchived: boolean;
-  createdAt: Date;
-}
+// export interface TestOrder extends Order {
+//   isArchived: boolean;
+//   createdAt: Date;
+// }

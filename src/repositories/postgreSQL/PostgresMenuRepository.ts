@@ -2,6 +2,7 @@ import { pool } from '../../db/postgreSQL';
 import { MenuItem } from '../../models/MenuItem';
 import { MenuRepository } from '../interfaces/MenuRepository';
 import { logger } from '../../utils/logger';
+import { isUniqueConstraintError } from '../../utils/pgValidate';
 
 export class PostgresMenuRepository implements MenuRepository {
   // VISITORS pg query
@@ -11,29 +12,29 @@ export class PostgresMenuRepository implements MenuRepository {
     return result.rows;
   }
 
-  async getById(id: bigint): Promise<MenuItem | null> {
+  async getById(id: number): Promise<MenuItem | null> {
     const result = await pool.query('SELECT * FROM menu WHERE id = $1', [id]);
-    return result.rows[0] || null;
-  }
-
-  async getByName(name: string): Promise<MenuItem | null> {
-    const result = await pool.query('SELECT * FROM menu WHERE name = $1', [name]);
     return result.rows[0] || null;
   }
 
   // ADMIN pg query
   async create(item: MenuItem): Promise<MenuItem> {
-    const result = await pool.query('INSERT INTO menu (name, description, price, category) VALUES ($1, $2, $3, $4) RETURNING *', [
-      item.name,
-      item.description,
-      item.price,
-      item.category,
-    ]);
-    logger(`Added menu item: ${item.name}`);
-    return result.rows[0];
+    try {
+      const result = await pool.query(
+        'INSERT INTO menu (name, description, price, category) VALUES ($1, $2, $3, $4) RETURNING *',
+        [item.name, item.description, item.price, item.category],
+      );
+      logger(`Added menu item: ${item.name}`);
+      return result.rows[0];
+    } catch (error) {
+      if (isUniqueConstraintError(error)) {
+        throw new Error('not unique name');
+      }
+      throw error;
+    }
   }
 
-  async update(item: Partial<MenuItem> & { id: bigint }): Promise<MenuItem> {
+  async update(item: Partial<MenuItem> & { id: number }): Promise<MenuItem> {
     const fields = Object.keys(item).filter((key) => key !== 'id');
 
     const query = `
@@ -44,13 +45,19 @@ export class PostgresMenuRepository implements MenuRepository {
     `;
 
     const values = [item.id, ...fields.map((key) => (item as any)[key])];
-    const result = await pool.query(query, values);
-
-    logger(`Updated menu item: ${item.name}`);
-    return result.rows[0];
+    try {
+      const result = await pool.query(query, values);
+      logger(`Updated menu item: ${item.name}`);
+      return result.rows[0];
+    } catch (error) {
+      if (isUniqueConstraintError(error)) {
+        throw new Error('not unique name');
+      }
+      throw error;
+    }
   }
 
-  async delete(id: bigint): Promise<void> {
+  async delete(id: number): Promise<void> {
     await pool.query('DELETE FROM menu WHERE id = $1', [id]);
     logger(`Delete menu item with id: ${id}`);
   }

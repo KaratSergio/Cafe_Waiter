@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { OrderController } from '../controllers/OrderController';
-import { validateData, orderSchema } from '../utils/validators';
+import { validateData, orderSchema } from '../utils/joiValidate';
 import { asyncHandler } from '../utils/asyncHandler';
 import { isAdmin } from '../utils/adminMiddleware';
 

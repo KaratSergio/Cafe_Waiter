@@ -10,6 +10,12 @@ export class MenuController {
     res.json(await menuService.getMenu());
   }
 
+  static async getById(req: Request, res: Response) {
+    const id = Number(req.params.id);
+    const item = await menuService.getMenuItemById(id);
+    res.json(item);
+  }
+
   // ADMIN controllers
   static async addItem(req: Request, res: Response) {
     const newItem = await menuService.addMenuItem(req.body);
@@ -17,13 +23,13 @@ export class MenuController {
   }
 
   static async updateItem(req: Request, res: Response) {
-    const id = BigInt(req.params.id);
+    const id = Number(req.params.id);
     const updatedItem = await menuService.updateMenuItem(id, req.body);
     res.status(200).json(updatedItem);
   }
 
   static async deleteItem(req: Request, res: Response) {
-    const id = BigInt(req.params.id);
+    const id = Number(req.params.id);
     await menuService.deleteMenuItem(id);
     res.status(204).send();
   }
