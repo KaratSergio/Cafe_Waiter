@@ -5,8 +5,9 @@ import { logger } from '../../utils/logger';
 
 export class PostgresMenuRepository implements MenuRepository {
   // VISITORS pg query
-  async getAll(): Promise<MenuItem[]> {
-    const result = await pool.query('SELECT * FROM menu');
+  async getAll(category?: string): Promise<MenuItem[]> {
+    const query = category ? 'SELECT * FROM menu WHERE category $1' : 'SELECT * FROM menu';
+    const result = category ? await pool.query(query, [category]) : await pool.query(query);
     return result.rows;
   }
 
@@ -22,10 +23,11 @@ export class PostgresMenuRepository implements MenuRepository {
 
   // ADMIN pg query
   async create(item: MenuItem): Promise<MenuItem> {
-    const result = await pool.query('INSERT INTO menu (name, description, price) VALUES ($1, $2, $3) RETURNING *', [
+    const result = await pool.query('INSERT INTO menu (name, description, price, category) VALUES ($1, $2, $3, $4) RETURNING *', [
       item.name,
       item.description,
       item.price,
+      item.category,
     ]);
     logger(`Added menu item: ${item.name}`);
     return result.rows[0];

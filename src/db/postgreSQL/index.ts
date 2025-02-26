@@ -26,7 +26,7 @@ pool.on('error', (err) => {
 
 export const initDB = async () => {
   try {
-    const sql = fs.readFileSync(path.join(__dirname, 'migrations', '25_02_25.sql')).toString();
+    const sql = fs.readFileSync(path.join(__dirname, 'migrations', '26_02_25.sql')).toString();
     await pool.query(sql);
     console.log('✅ Database initialized');
   } catch (err) {

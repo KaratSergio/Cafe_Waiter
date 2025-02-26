@@ -1,6 +1,7 @@
 import { MenuRepository } from '../repositories/MenuRepository';
 import { MenuItem } from '../models/MenuItem';
 import { HttpError } from '../utils/httpError';
+import { ALLOWED_CATEGORIES } from '../constants/menu';
 
 export class MenuService {
   #menuRepo: MenuRepository;
@@ -23,6 +24,10 @@ export class MenuService {
     const existingItem = await this.#menuRepo.getByName(item.name);
     if (existingItem) {
       throw HttpError(409, 'Item with this name already exists');
+    }
+
+    if (!ALLOWED_CATEGORIES.includes(item.category)) {
+      throw HttpError(400, 'Invalid category');
     }
 
     return this.#menuRepo.create(item);

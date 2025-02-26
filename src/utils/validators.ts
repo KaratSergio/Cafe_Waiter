@@ -1,12 +1,16 @@
 import Joi, { ObjectSchema } from 'joi';
 import createError from 'http-errors';
 import { Request, Response, NextFunction } from 'express';
+import { ALLOWED_CATEGORIES } from '../constants/menu';
 
 // schema
 export const menuItemSchema = Joi.object({
   name: Joi.string().min(3).max(50).required(),
   description: Joi.string().max(500).required(),
   price: Joi.number().min(0).required(),
+  category: Joi.string()
+    .valid(...ALLOWED_CATEGORIES)
+    .required(),
 });
 
 export const updateMenuItemSchema = Joi.object({
