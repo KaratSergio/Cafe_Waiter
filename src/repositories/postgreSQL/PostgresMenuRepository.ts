@@ -2,7 +2,6 @@ import { pool } from '../../db/postgreSQL';
 import { MenuItem } from '../../models/MenuItem';
 import { MenuRepository } from '../interfaces/MenuRepository';
 import { logger } from '../../utils/logger';
-import { isUniqueConstraintError } from '../../utils/pgValidate';
 
 export class PostgresMenuRepository implements MenuRepository {
   // VISITORS pg query
@@ -19,19 +18,14 @@ export class PostgresMenuRepository implements MenuRepository {
 
   // ADMIN pg query
   async create(item: MenuItem): Promise<MenuItem> {
-    try {
-      const result = await pool.query(
-        'INSERT INTO menu (name, description, price, category) VALUES ($1, $2, $3, $4) RETURNING *',
-        [item.name, item.description, item.price, item.category],
-      );
-      logger(`Added menu item: ${item.name}`);
-      return result.rows[0];
-    } catch (error) {
-      if (isUniqueConstraintError(error)) {
-        throw new Error('not unique name');
-      }
-      throw error;
-    }
+    const result = await pool.query('INSERT INTO menu (name, description, price, category) VALUES ($1, $2, $3, $4) RETURNING *', [
+      item.name,
+      item.description,
+      item.price,
+      item.category,
+    ]);
+    logger(`Added menu item: ${item.name}`);
+    return result.rows[0];
   }
 
   async update(item: Partial<MenuItem> & { id: number }): Promise<MenuItem> {
@@ -42,19 +36,12 @@ export class PostgresMenuRepository implements MenuRepository {
     SET ${fields.map((key, index) => `${key} = $${index + 2}`).join(', ')}
     WHERE id = $1 
     RETURNING *;
-    `;
+  `;
 
     const values = [item.id, ...fields.map((key) => (item as any)[key])];
-    try {
-      const result = await pool.query(query, values);
-      logger(`Updated menu item: ${item.name}`);
-      return result.rows[0];
-    } catch (error) {
-      if (isUniqueConstraintError(error)) {
-        throw new Error('not unique name');
-      }
-      throw error;
-    }
+    const result = await pool.query(query, values);
+    logger(`Updated menu item: ${item.name}`);
+    return result.rows[0];
   }
 
   async delete(id: number): Promise<void> {

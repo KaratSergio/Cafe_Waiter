@@ -1,16 +1,12 @@
 import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 
-export const errorHandler: ErrorRequestHandler = (
-  err: any,
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): void => {
-  if (err && typeof err === 'object' && 'status' in err) {
-    const status = (err as { status: number }).status;
-    const message = (err as { message: string }).message;
+interface HttpError extends Error {
+  status: number;
+}
 
-    res.status(status).json({ error: message });
+export const errorHandler: ErrorRequestHandler = (err: HttpError, req: Request, res: Response, next: NextFunction): void => {
+  if (err.status) {
+    res.status(err.status).json({ error: err.message });
     return;
   }
 

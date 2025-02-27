@@ -32,11 +32,11 @@ export class MenuService {
 
     try {
       return await this.#menuRepo.create(item);
-    } catch (error) {
-      if (error instanceof Error && error.message === 'not unique name') {
+    } catch (error: any) {
+      if (isUniqueConstraintError(error)) {
         throw HttpError(409, 'Item with this name already exists');
       }
-      throw HttpError(500, 'Internal Server Error');
+      throw HttpError(500, 'Database error');
     }
   }
 
@@ -48,11 +48,11 @@ export class MenuService {
 
     try {
       return await this.#menuRepo.update({ ...existingItem, ...updates, id: existingItem.id });
-    } catch (error) {
-      if (error instanceof Error && error.message === 'not unique name') {
+    } catch (error: any) {
+      if (isUniqueConstraintError(error)) {
         throw HttpError(409, 'Item with this name already exists');
       }
-      throw HttpError(500, 'Internal Server Error');
+      throw HttpError(500, 'Database error');
     }
   }
 
