@@ -91,8 +91,8 @@ export class PostgresOrderRepository implements OrderRepository {
   }
 
   async archiveOrders(date: string): Promise<void> {
-    const archivedDate = new Date();
-    const dateStr = archivedDate.toISOString().split('T')[0];
+    const archivedDate = new Date().toISOString().split('T')[0];
+    const dateStr = new Date(date).toISOString().split('T')[0];
 
     const archivedOrders = await pool.query(
       `
@@ -112,7 +112,7 @@ export class PostgresOrderRepository implements OrderRepository {
         JOIN orders o ON oi.order_id = o.id
         WHERE CAST(o.created_at AS DATE) = $1
     `,
-      [archivedDate],
+      [dateStr],
     );
 
     for (const item of orderItems.rows) {
@@ -128,10 +128,8 @@ export class PostgresOrderRepository implements OrderRepository {
       }
     }
 
-    await pool.query('DELETE FROM order_items WHERE order_id IN (SELECT id FROM orders WHERE created_at::DATE = $1)', [
-      archivedDate,
-    ]);
-    await pool.query('DELETE from orders WHERE created_at::DATE = $1', [archivedDate]);
+    await pool.query('DELETE FROM order_items WHERE order_id IN (SELECT id FROM orders WHERE created_at::DATE = $1)', [dateStr]);
+    await pool.query('DELETE from orders WHERE created_at::DATE = $1', [dateStr]);
 
     logger(`All orders for ${dateStr} have been moved to archive`);
   }
